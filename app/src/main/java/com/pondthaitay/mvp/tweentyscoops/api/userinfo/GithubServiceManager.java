@@ -14,7 +14,7 @@ import static com.pondthaitay.mvp.tweentyscoops.api.userinfo.GithubURL.BASE_URL;
 public class GithubServiceManager {
 
     private static GithubServiceManager instance;
-    private static GithubApi api;
+    private GithubApi api;
 
     private CompositeDisposable disposable;
 
@@ -29,8 +29,12 @@ public class GithubServiceManager {
         this.disposable = new CompositeDisposable();
     }
 
-    public static void setApi(GithubApi mockApi) {
+    public void setApi(GithubApi mockApi) {
         api = mockApi;
+    }
+
+    public void setDisposable(CompositeDisposable disposable) {
+        this.disposable = disposable;
     }
 
     public void requestUserInfo(String username, final BaseSubscriber.NetworkCallback callback) {

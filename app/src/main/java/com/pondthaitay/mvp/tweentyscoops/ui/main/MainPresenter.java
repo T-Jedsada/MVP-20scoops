@@ -23,7 +23,6 @@ class MainPresenter extends BasePresenter<MainInterface.View> implements MainInt
     }
 
     MainPresenter() {
-        super();
         this.githubServiceManager = GithubServiceManager.getInstance();
         this.calculator = Calculator.getInstance();
     }

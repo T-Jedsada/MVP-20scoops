@@ -8,7 +8,8 @@ import com.pondthaitay.mvp.tweentyscoops.ui.base.BasePresenter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-class ShowListActivityPresenter extends BasePresenter<ShowListInterface.View> implements ShowListInterface.Presenter, BaseSubscriber.NetworkCallback {
+class ShowListActivityPresenter extends BasePresenter<ShowListInterface.View>
+        implements ShowListInterface.Presenter, BaseSubscriber.NetworkCallback {
 
     private BeerApi beerApi;
     private BeerDao beerDao;

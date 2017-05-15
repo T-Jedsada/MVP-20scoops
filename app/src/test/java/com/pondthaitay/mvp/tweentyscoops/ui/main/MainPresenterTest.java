@@ -31,6 +31,7 @@ import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
@@ -61,7 +62,7 @@ public class MainPresenterTest {
     private MainPresenter presenter;
     private JsonMockUtility jsonUtil;
     private ResponseBody responseBody;
-    private GithubServiceManager spyGithubServiceManager;
+    private GithubServiceManager githubServiceManager;
 
     @Before
     public void setup() {
@@ -75,17 +76,17 @@ public class MainPresenterTest {
         Calculator calculator = Calculator.getInstance();
         Calculator spyCalculator = spy(calculator);
 
-        GithubServiceManager githubServiceManager = GithubServiceManager.getInstance();
-        spyGithubServiceManager = spy(githubServiceManager);
-        spyGithubServiceManager.setApi(mockGithubApi);
+        githubServiceManager = GithubServiceManager.getInstance();
+        githubServiceManager.setApi(mockGithubApi);
+        githubServiceManager.setDisposable(disposable);
 
         presenter = new MainPresenter();
         presenter.setCalculateManager(spyCalculator);
-        presenter.setGithubServiceManager(spyGithubServiceManager);
+        presenter.setGithubServiceManager(githubServiceManager);
         presenter.attachView(mockView);
         MainPresenter spyPresenter = spy(presenter);
         spyPresenter.setCalculateManager(spyCalculator);
-        spyPresenter.setGithubServiceManager(spyGithubServiceManager);
+        spyPresenter.setGithubServiceManager(githubServiceManager);
         spyPresenter.attachView(mockView);
 
         when(RxBus.get()).thenReturn(bus);
@@ -94,6 +95,11 @@ public class MainPresenterTest {
     @After
     public void destroy() {
         presenter.detachView();
+    }
+
+    @Test
+    public void testPresenterCreate() {
+        assertNotNull(MainPresenter.create());
     }
 
     @Test
@@ -116,14 +122,13 @@ public class MainPresenterTest {
                 UserInfoDao.class);
 
         Response<UserInfoDao> mockResponse = Response.success(mockResult);
-        Observable<Response<UserInfoDao>> mockCall = Observable.just(mockResponse);
-        when(spyGithubServiceManager.requestUserInfo(anyString())).thenReturn(mockCall);
-        presenter.loadUserInfo("pondthaitay");
+        Observable<Response<UserInfoDao>> mockObservable = Observable.just(mockResponse);
+        when(githubServiceManager.requestUserInfo(anyString())).thenReturn(mockObservable);
+        presenter.loadUserInfo("test");
         verify(mockView, times(1)).showProgressDialog();
         verify(disposable, times(1)).add(any(BaseSubscriber.class));
 
-        TestObserver<Response<UserInfoDao>> testObserver =
-                spyGithubServiceManager.requestUserInfo(anyString()).test();
+        TestObserver<Response<UserInfoDao>> testObserver = mockObservable.test();
         testObserver.awaitTerminalEvent();
         testObserver.assertValue(response -> {
             verify(mockView, times(1)).hideProgressDialog();
@@ -135,44 +140,42 @@ public class MainPresenterTest {
 
     @Test
     public void loadUserInfoGitHubError() throws Exception {
-//        Response<UserInfoDao> mockResponse = Response.error(500, responseBody);
-//        mockResponse.message();
-//        Observable<Response<UserInfoDao>> mockCall = Observable.just(mockResponse);
-//        when(githubApi.getUserInfo(anyString())).thenReturn(mockCall);
-//        presenter.loadUserInfo("");
-//        verify(mockView, times(1)).showProgressDialog();
-//        verify(disposable, times(1)).add(any(BaseSubscriber.class));
-//
-//        TestObserver<Response<UserInfoDao>> testObserver =
-//                githubApi.getUserInfo(anyString()).test();
-//        testObserver.awaitTerminalEvent();
-//        testObserver.assertValue(response -> {
-//            verify(mockView, times(1)).hideProgressDialog();
-//            verify(mockView, times(1)).showError(eq(response.message()));
-//            assertThat(response.message(), is(mockResponse.message()));
-//            return true;
-//        });
+        Response<UserInfoDao> mockResponse = Response.error(500, responseBody);
+        mockResponse.message();
+        Observable<Response<UserInfoDao>> mockObservable = Observable.just(mockResponse);
+        when(githubServiceManager.requestUserInfo(anyString())).thenReturn(mockObservable);
+        presenter.loadUserInfo("pondthaitay");
+        verify(mockView, times(1)).showProgressDialog();
+        verify(disposable, times(1)).add(any(BaseSubscriber.class));
+
+        TestObserver<Response<UserInfoDao>> testObserver = mockObservable.test();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertValue(response -> {
+            verify(mockView,times(1)).hideProgressDialog();
+            verify(mockView, times(1)).showError(eq(response.message()));
+            assertThat(response.message(), is(mockResponse.message()));
+            return true;
+        });
     }
 
 
     @Test
     public void loadUserInfoGitHubUnAuthorized() throws Exception {
-//        Response<UserInfoDao> mockResponse = Response.error(401, responseBody);
-//        Observable<Response<UserInfoDao>> mockCall = Observable.just(mockResponse);
-//        when(githubApi.getUserInfo(anyString())).thenReturn(mockCall);
-//        presenter.loadUserInfo("pondthaitay");
-//        verify(mockView, times(1)).showProgressDialog();
-//        verify(disposable, times(1)).add(any(BaseSubscriber.class));
-//
-//        TestObserver<Response<UserInfoDao>> testObserver =
-//                githubApi.getUserInfo(anyString()).test();
-//        testObserver.awaitTerminalEvent();
-//        testObserver.assertValue(response -> {
-//            verify(mockView, times(1)).hideProgressDialog();
-//            verify(mockView, times(1)).unAuthorizedApi();
-//            assertThat(response, is(mockResponse));
-//            return true;
-//        });
+        Response<UserInfoDao> mockResponse = Response.error(401, responseBody);
+        Observable<Response<UserInfoDao>> mockObservable = Observable.just(mockResponse);
+        when(githubServiceManager.requestUserInfo(anyString())).thenReturn(mockObservable);
+        presenter.loadUserInfo("pondthaitay");
+        verify(mockView, times(1)).showProgressDialog();
+        verify(disposable, times(1)).add(any(BaseSubscriber.class));
+
+        TestObserver<Response<UserInfoDao>> testObserver = mockObservable.test();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertValue(response -> {
+            verify(mockView, times(1)).hideProgressDialog();
+            verify(mockView, times(1)).unAuthorizedApi();
+            assertThat(response, is(mockResponse));
+            return true;
+        });
     }
 
     @Test
@@ -192,6 +195,7 @@ public class MainPresenterTest {
     @Test
     public void testViewStop() throws Exception {
         presenter.onViewStop();
+        verify(disposable, times(1)).clear();
         verify(RxBus.get(), times(1)).unregister(presenter);
     }
 

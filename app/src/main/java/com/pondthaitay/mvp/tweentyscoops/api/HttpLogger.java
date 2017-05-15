@@ -26,8 +26,7 @@ class HttpLogger implements HttpLoggingInterceptor.Logger {
             Timber.d(prettyPrintJson);
         } catch (JsonSyntaxException m) {
             Timber.e("html header parse failed");
-            m.printStackTrace();
-            Timber.e(message);
+            Timber.e(m);
         }
     }
 }

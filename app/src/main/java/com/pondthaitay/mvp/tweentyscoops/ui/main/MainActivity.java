@@ -19,7 +19,7 @@ import org.parceler.Parcels;
 import butterknife.BindView;
 import timber.log.Timber;
 
-public class MainActivity extends BaseActivity<MainInterface.Presenter> implements MainInterface.View {
+public class MainActivity extends BaseActivity<MainActivityInterface.Presenter> implements MainActivityInterface.View {
 
     @BindView(R2.id.tvResult)
     TextView tvResult;
@@ -60,8 +60,8 @@ public class MainActivity extends BaseActivity<MainInterface.Presenter> implemen
     }
 
     @Override
-    public MainInterface.Presenter createPresenter() {
-        return MainPresenter.create();
+    public MainActivityInterface.Presenter createPresenter() {
+        return MainActivityPresenter.create();
     }
 
     @Override

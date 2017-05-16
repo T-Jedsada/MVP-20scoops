@@ -7,8 +7,10 @@ import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
+import static com.pondthaitay.mvp.tweentyscoops.api.beerlist.BeerURL.BEER_LIST;
+
 public interface BeerApi {
 
-    @GET("api/v1/beer")
+    @GET(BEER_LIST)
     Observable<Response<BeerDao>> getListBeer(@Query("page") int page);
 }

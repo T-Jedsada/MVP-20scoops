@@ -46,12 +46,12 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Log.class, RxBus.class, CompositeDisposable.class, Calculator.class})
-public class MainPresenterTest {
+public class MainActivityPresenterTest {
 
     @Rule
     public final RxSchedulersOverrideRule schedulers = new RxSchedulersOverrideRule();
     @Mock
-    private MainInterface.View mockView;
+    private MainActivityInterface.View mockView;
     @Mock
     private CompositeDisposable disposable;
     @Mock
@@ -59,7 +59,7 @@ public class MainPresenterTest {
     @Mock
     private Bus bus;
 
-    private MainPresenter presenter;
+    private MainActivityPresenter presenter;
     private JsonMockUtility jsonUtil;
     private ResponseBody responseBody;
     private GithubServiceManager githubServiceManager;
@@ -80,11 +80,11 @@ public class MainPresenterTest {
         githubServiceManager.setApi(mockGithubApi);
         githubServiceManager.setDisposable(disposable);
 
-        presenter = new MainPresenter();
+        presenter = new MainActivityPresenter();
         presenter.setCalculateManager(spyCalculator);
         presenter.setGithubServiceManager(githubServiceManager);
         presenter.attachView(mockView);
-        MainPresenter spyPresenter = spy(presenter);
+        MainActivityPresenter spyPresenter = spy(presenter);
         spyPresenter.setCalculateManager(spyCalculator);
         spyPresenter.setGithubServiceManager(githubServiceManager);
         spyPresenter.attachView(mockView);
@@ -99,7 +99,7 @@ public class MainPresenterTest {
 
     @Test
     public void testPresenterCreate() {
-        assertNotNull(MainPresenter.create());
+        assertNotNull(MainActivityPresenter.create());
     }
 
     @Test

@@ -12,17 +12,17 @@ import com.pondthaitay.mvp.tweentyscoops.manager.Calculator;
 import com.pondthaitay.mvp.tweentyscoops.ui.base.BasePresenter;
 import com.pondthaitay.mvp.tweentyscoops.ui.event.TestBusEvent;
 
-class MainPresenter extends BasePresenter<MainInterface.View> implements MainInterface.Presenter,
+class MainActivityPresenter extends BasePresenter<MainActivityInterface.View> implements MainActivityInterface.Presenter,
         BaseSubscriber.NetworkCallback {
 
     private GithubServiceManager githubServiceManager;
     private Calculator calculator;
 
-    public static MainInterface.Presenter create() {
-        return new MainPresenter();
+    public static MainActivityInterface.Presenter create() {
+        return new MainActivityPresenter();
     }
 
-    MainPresenter() {
+    MainActivityPresenter() {
         this.githubServiceManager = GithubServiceManager.getInstance();
         this.calculator = Calculator.getInstance();
     }

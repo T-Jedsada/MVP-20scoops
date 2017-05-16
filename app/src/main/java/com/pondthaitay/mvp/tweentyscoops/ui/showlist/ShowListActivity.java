@@ -9,8 +9,8 @@ import com.pondthaitay.mvp.tweentyscoops.ui.showlist.adapter.ShowListAdapter;
 
 import butterknife.BindView;
 
-public class ShowListActivity extends BaseActivity<ShowListInterface.Presenter>
-        implements ShowListInterface.View {
+public class ShowListActivity extends BaseActivity<ShowListActivityInterface.Presenter>
+        implements ShowListActivityInterface.View {
 
     @BindView(R.id.list)
     RecyclerView list;
@@ -21,7 +21,7 @@ public class ShowListActivity extends BaseActivity<ShowListInterface.Presenter>
     }
 
     @Override
-    public ShowListInterface.Presenter createPresenter() {
+    public ShowListActivityInterface.Presenter createPresenter() {
         return ShowListActivityPresenter.create();
     }
 
@@ -53,7 +53,7 @@ public class ShowListActivity extends BaseActivity<ShowListInterface.Presenter>
 
     @Override
     protected void initialize() {
-//        getPresenter().getListBeer();
+        getPresenter().getListBeer();
     }
 
     @Override

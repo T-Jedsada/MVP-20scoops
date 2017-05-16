@@ -1,26 +1,26 @@
 package com.pondthaitay.mvp.tweentyscoops.ui.showlist;
 
 import com.pondthaitay.mvp.tweentyscoops.api.BaseSubscriber;
-import com.pondthaitay.mvp.tweentyscoops.api.beerlist.BeerApi;
+import com.pondthaitay.mvp.tweentyscoops.api.beerlist.BeerServiceManager;
 import com.pondthaitay.mvp.tweentyscoops.api.dao.BeerDao;
 import com.pondthaitay.mvp.tweentyscoops.ui.base.BasePresenter;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+class ShowListActivityPresenter extends BasePresenter<ShowListActivityInterface.View>
+        implements ShowListActivityInterface.Presenter, BaseSubscriber.NetworkCallback {
 
-class ShowListActivityPresenter extends BasePresenter<ShowListInterface.View>
-        implements ShowListInterface.Presenter, BaseSubscriber.NetworkCallback {
-
-    private BeerApi beerApi;
+    private BeerServiceManager beerServiceManager;
     private BeerDao beerDao;
 
-    public static ShowListInterface.Presenter create() {
+    public static ShowListActivityInterface.Presenter create() {
         return new ShowListActivityPresenter();
     }
 
     ShowListActivityPresenter() {
-        super();
-//        this.beerApi = beerApi;
+        beerServiceManager = BeerServiceManager.getInstance();
+    }
+
+    void setBeerServiceManager(BeerServiceManager mock) {
+        this.beerServiceManager = mock;
     }
 
     @Override
@@ -30,7 +30,7 @@ class ShowListActivityPresenter extends BasePresenter<ShowListInterface.View>
 
     @Override
     public void onViewDestroy() {
-
+        setBeerDao(null);
     }
 
     @Override
@@ -47,22 +47,14 @@ class ShowListActivityPresenter extends BasePresenter<ShowListInterface.View>
     public void getListBeer() {
         if (getView() != null) {
             getView().showProgressDialog();
-            beerApi.getListBeer(getNextPage())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new BaseSubscriber<>(this));
+            beerServiceManager.requestBeerList(getNextPage(), this);
         }
-    }
-
-    private int getNextPage() {
-        if (beerDao == null) return 0;
-        else return beerDao.getNextBeerIndex();
     }
 
     @Override
     public <T> void onSuccess(T result) {
         if (getView() != null) {
-            beerDao = (BeerDao) result;
+            setBeerDao((BeerDao) result);
             getView().hideProgressDialog();
             getView().setBeerItemToAdapter();
         }
@@ -71,9 +63,28 @@ class ShowListActivityPresenter extends BasePresenter<ShowListInterface.View>
     @Override
     public void onFailure(String message) {
         if (getView() != null) {
-            beerDao = null;
+            setBeerDao(null);
             getView().hideProgressDialog();
             getView().showError(message);
         }
+    }
+
+    @Override
+    public void onUnAuthorized() {
+        super.onUnAuthorized();
+        setBeerDao(null);
+    }
+
+    BeerDao getBeerDao() {
+        return beerDao;
+    }
+
+    private void setBeerDao(BeerDao beerDao) {
+        this.beerDao = beerDao;
+    }
+
+    private int getNextPage() {
+        if (beerDao == null) return 0;
+        else return beerDao.getNextBeerIndex();
     }
 }

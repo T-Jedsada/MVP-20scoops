@@ -11,7 +11,7 @@ import org.junit.runners.Suite;
         CalculatorMetricMinusTest.class,
         CalculatorMetricDivideTest.class,
         CalculatorMetricMultiplyTest.class,
-        MainPresenterTest.class,
+        MainActivityPresenterTest.class,
         MainFragmentPresenterTest.class
 })
 public class MainTestSuite {
